@@ -28,6 +28,6 @@ classIds, confidences, boxes = cv.detect(net, img, confThreshold=Float32(0.5))
 box = (boxes[1].x, boxes[1].y, boxes[1].x+boxes[1].width, boxes[1].y+boxes[1].height)
 expected_rect = (185,101,129+185,169+101)
 
-@test IOU(box, expected_rect) > 0.95
+@test IOU(box, expected_rect) > 0.8
 
 print("dnn test passed\n")

@@ -2,8 +2,7 @@ using OpenCV
 const cv = OpenCV
 size0 = Int32(300)
 # take the model from https://github.com/opencv/opencv_extra/tree/master/testdata/dnn
-net = cv.dnn_DetectionModel("/home/archit/Downloads/opencv_face_detector.pbtxt",
-                     "/home/archit/Downloads/opencv_face_detector_uint8.pb")
+net = cv.dnn_DetectionModel("opencv_face_detector.pbtxt", "opencv_face_detector_uint8.pb")
 
 cv.setPreferableTarget(net, cv.DNN_TARGET_CPU)
 cv.setInputMean(net, (104, 177, 123))
