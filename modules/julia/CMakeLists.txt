@@ -1,44 +1,6 @@
-if(NOT HAVE_JULIA MATCHES "YES")
-    message(STATUS "Julia not found. Not compiling Julia Bindings. ${HAVE_JULIA}")
-    ocv_module_disable(julia)
-elseif(NOT PYTHON_DEFAULT_EXECUTABLE)
+if(NOT PYTHON_DEFAULT_EXECUTABLE)
    message(WARNING "Python required for Julia bindings...disabling")
    ocv_module_disable(julia)
-endif()
-
-# WARN_MIXED_PRECISION
-macro(WARN_MIXED_PRECISION COMPILER_BITNESS JULIA_BITNESS)
-    set(MSG "Your compiler is ${COMPILER_BITNESS}-bit")
-    set(MSG "${MSG} but your version of Julia is ${JULIA_BITNESS}-bit.")
-    set(MSG "${MSG} To build Julia bindings, please switch to a ${JULIA_BITNESS}-bit compiler.")
-    message(WARNING ${MSG})
-endmacro()
-
-
-math(EXPR ARCH "${CMAKE_SIZEOF_VOID_P} * 8")
-if (${ARCH} EQUAL 32 AND ${Julia_WORD_SIZE} MATCHES "64")
-    warn_mixed_precision("32" "64")
-    ocv_module_disable(julia)
-    return()
-elseif (${ARCH} EQUAL 64 AND NOT ${Julia_WORD_SIZE} MATCHES "64")
-    warn_mixed_precision("64" "32")
-    ocv_module_disable(julia)
-    return()
-endif()
-
-if(NOT JlCxx_DIR)
-    execute_process(
-        COMMAND "${Julia_EXECUTABLE}" --startup-file=no -e "using CxxWrap; print(CxxWrap.CxxWrapCore.prefix_path())"
-        OUTPUT_VARIABLE JlCxx_DIR
-    )
-endif()
-
-if(JlCxx_DIR)
-    if(EXISTS ${JlCxx_DIR}/JlCxxConfig.cmake)
-    else()
-        message(STATUS "JlCxx found but not source build - disabling Julia module")
-        ocv_module_disable(julia)
-    endif()
 endif()
 
 find_package(JlCxx QUIET)
@@ -113,22 +75,8 @@ install(DIRECTORY package/ DESTINATION ${JULIA_PKG_INSTALL_PATH})
 install(TARGETS ${the_module} LIBRARY DESTINATION ${JULIA_PKG_INSTALL_PATH}/OpenCV/src/lib)
 
 
-if(JULIA_PKG_INSTALL_ENV)
-    set(JULIA_PKG_EXECS "Pkg.activate(${JULIA_PKG_INSTALL_ENV});${JULIA_PKG_EXECS}")
-endif()
-
-
-set(JULIA_COMMAND "\"${Julia_EXECUTABLE}\" -e \"using Pkg; ${JULIA_PKG_EXECS}\"")
 # message(STATUS "Installing Julia bindings using ${JULIA_COMMAND}")
 
-
-if(NOT INSTALL_CREATE_DISTRIB)
-    install(CODE "
-    set(JULIA_PKG_PATH \"${JULIA_PKG_INSTALL_PATH}/OpenCV\")
-    execute_process(COMMAND \"${Julia_EXECUTABLE}\" ${CMAKE_CURRENT_LIST_DIR}/package/install_package.jl \${JULIA_PKG_PATH} OUTPUT_VARIABLE JULIA_INSTALL_OUT)
-    message(STATUS \"Install output: \${JULIA_INSTALL_OUT}\")
-    ")
-endif()
 
 
 # ocv_create_module()
