@@ -20,7 +20,6 @@ set(HAVE_JULIA "YES" CACHE STRING ADVANCED)
 set(the_description "The Julia bindings")
 ocv_add_module(
     julia
-    BINDINGS
     OPTIONAL
     opencv_core
     opencv_imgproc
