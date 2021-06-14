@@ -20,6 +20,7 @@ set(HAVE_JULIA "YES" CACHE STRING ADVANCED)
 set(the_description "The Julia bindings")
 ocv_add_module(
     julia
+    BINDINGS
     OPTIONAL
     opencv_core
     opencv_imgproc
@@ -52,12 +53,12 @@ execute_process(
 file(COPY ${CMAKE_CURRENT_BINARY_DIR}/gen/cpp_files/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/gen/autogen_cpp)
 file(COPY ${CMAKE_CURRENT_BINARY_DIR}/gen/jl_cxx_files/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/gen/autogen_jl)
 
-ocv_glob_module_sources("${CMAKE_CURRENT_BINARY_DIR}/gen/autogen_cpp/cv_core.cpp")
+ocv_glob_module_sources()
 ocv_module_include_directories()
 ocv_warnings_disable(CMAKE_CXX_FLAGS -Wmissing-prototypes -Wmissing-declarations)
-
-ocv_set_module_sources()
-ocv_create_module()
+ocv_add_library(${the_module} SHARED ${OPENCV_MODULE_${the_module}_HEADERS}
+                                     ${OPENCV_MODULE_${the_module}_SOURCES}
+                                     "${CMAKE_CURRENT_BINARY_DIR}/gen/autogen_cpp/cv_core.cpp")
 
 
 if(NOT JULIA_PKG_INSTALL_PATH)
