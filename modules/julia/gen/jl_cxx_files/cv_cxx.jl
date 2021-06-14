@@ -1,12 +1,14 @@
 # using StaticArrays
 
+using opencv_jll
+
 include("typestructs.jl")
 include("Vec.jl")
 const dtypes = Union{UInt8, Int8, UInt16, Int16, Int32, Float32, Float64}
 size_t = UInt64
 
 using CxxWrap
-@wrapmodule(joinpath(@__DIR__,"lib","libopencv_julia"), :cv_wrap)
+@wrapmodule(opencv_jll.libopencv_julia_path, :cv_wrap)
 function __init__()
     @initcxx
 
